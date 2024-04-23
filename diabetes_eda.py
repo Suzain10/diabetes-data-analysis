@@ -9,6 +9,7 @@ Original file is located at
 
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 import seaborn as sns
 
 df=pd.read_csv("diabetes.csv")
@@ -21,11 +22,45 @@ zeroes_count = (df == 0).sum()
 print("Total zeroes in each column:")
 print(zeroes_count)
 
+df['Glucose'].replace(0,np.nan, inplace=True)
+zeros =(df['Glucose']==0).sum()
+zeros
+
+average_glucose = df.loc[df['Outcome'] == 0, 'Glucose'].mean()
+df.loc[(df['Outcome'] == 0) & (df['Glucose'].isnull()), 'Glucose'] = average_glucose
+
+missing_count = df['Glucose'].isnull().sum()
+print(missing_count)
+
+average_glucose1 = df.loc[df['Outcome'] == 1, 'Glucose'].mean()
+df.loc[(df['Outcome'] == 1) & (df['Glucose'].isnull()), 'Glucose'] = average_glucose1
+
+missing_count = df['Glucose'].isnull().sum()
+print(missing_count)
+
+df['BloodPressure'].replace(0,np.nan, inplace=True)
+zeros =(df['BloodPressure']==0).sum()
+zeros
+
+average_BP = df.loc[df['Age'] <= 45, 'BloodPressure'].mean()
+df.loc[(df['Age'] <= 45) & (df['BloodPressure'].isnull()), 'BloodPressure'] = average_BP
+
+missing_count1 = df['BloodPressure'].isnull().sum()
+print(missing_count1)
+
+average_BP1 = df.loc[df['Age'] > 45, 'BloodPressure'].mean()
+df.loc[(df['Age'] > 45) & (df['BloodPressure'].isnull()), 'BloodPressure'] = average_BP1
+
+missing_count = df['BloodPressure'].isnull().sum()
+print(missing_count)
+
 df.shape
 
-mean_values_specific = df[['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction']].mean()
 
-df[['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction']] = df[['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction']].replace(0, mean_values_specific)
+
+mean_values_specific = df[[ 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction']].mean()
+
+df[['SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction']] = df[[ 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction']].replace(0, mean_values_specific)
 
 df.describe()
 
@@ -39,6 +74,15 @@ plt.xlabel('Outcome')
 plt.ylabel('Count')
 plt.xticks([0, 1], ['Non-Diabetic', 'Diabetic'], rotation=0)
 plt.grid(axis='y')
+plt.show()
+
+Pregnancies_counts = df['Pregnancies'].value_counts()
+print(Pregnancies_counts)
+
+plt.bar(Pregnancies_counts.index, Pregnancies_counts.values, color='skyblue')
+plt.xlabel('Number of Pregnancies')
+plt.ylabel('Frequency')
+plt.title('Distribution of Pregnancies')
 plt.show()
 
 plt.figure(figsize=(8, 6))
@@ -317,4 +361,6 @@ plt.figure(figsize=(8, 8))
 plt.pie(age_group_counts, labels=age_group_counts.index, autopct='%1.1f%%', startangle=140)
 plt.title('Distribution of Individuals Across Age Groups (Ages 21-81)')
 plt.show()
+
+df.to_csv('Diabetes_data.csv', index=False)
 
